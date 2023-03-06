@@ -1,204 +1,107 @@
 #include <iostream>
-#include <assert.h>
 using namespace std;
 
-class Item;
-
-class List 
+struct myData
 {
+    string name = "";
+    int red = 0;
+    int green = 0;
+    int blue = 0;
+    myData* next = nullptr;
 
-public:
-// private:
-    Item* first = nullptr;
-    Item* last = nullptr;
-
-public:
-    Item* getFirst() { return first; }
-    Item* getLast() { return last; }
-
-private:
-    void insert(Item* before, Item* fresh, Item* after); 
-
-public:
-    void insertFirst (Item* fresh);
-    void insertLast(Item* fresh);
-
-    void print ();
-
-    Item* find (string name0);
-
-    List () { }
-    ~List();
-
-    friend class Item;
+     myData (string n = "", int r = 0, int g = 0, int b = 0) 
+         : 
+         name (n), red (r), green (g), blue (b), next (NULL) 
+     { }
 };
 
-class Item {
-public:
-    List * link;
-    string name;
-    int r, g, b;
-    Item* prev;
-    Item* next;
-    Item(string name0="", int r0=0, int g0=0, int b0=0) 
-        : link (nullptr), name(name0), r(r0), g(g0), b(b0), prev(nullptr), next(nullptr) { }
-
-    void insertBefore(Item* fresh);
-    void insertAfter(Item* fresh);
-    void remove ();
-};
-
-List :: ~ List ()
-{
-    Item* p = first;
-    while (p != nullptr)
-    {
-        Item* t = p->next;
-        // p->remove();
-        delete p;
-        p = t;
+void push(myData * & list, myData *t) {
+    t->next = nullptr;
+    if (list==nullptr) {
+        list = t;
     }
-    // first = nullptr;
-    // last = nullptr;
-}
-
-void List::insert(Item* before, Item* fresh, Item* after) 
-{
-    // assert(first == nullptr && last == nullptr || first != nullptr && last != nullptr);
-    assert(fresh != nullptr);
-    assert(fresh->link == nullptr);
-    fresh->link = this;
-
-    fresh->prev = before;
-    fresh->next = after;
-
-    if (before != nullptr) 
-    {
-        before->next = fresh;
-    }
-    else 
-    {
-       first = fresh;
-    }
-
-    if (after != nullptr) 
-    {
-        after->prev = fresh;
-    }
-    else 
-    { 
-        last = fresh; 
-    }
-};
-
-void Item::remove()
-{
-    if (link != nullptr)
-    {
-        // Item* before = prev;
-        // Item* after = next;
-        
-        if (prev != nullptr)
-            prev->next = next;
-        else
-            link->first = next;
-
-        if (next != nullptr)
-            next->prev = prev;
-        else
-            link->last = prev;
-
-        prev = nullptr;
-        next = nullptr;
-        link = nullptr;
+    else {
+        myData* u = list;
+        while (u->next != nullptr) u = u->next;
+        u->next = t;
     }
 }
 
-void List::insertFirst(Item* fresh)
+void myPrint(myData *list)
 {
-    insert(nullptr, fresh, first);
-}
-
-void List::insertLast(Item* fresh)
-{
-    this->insert(this->last, fresh, nullptr);
-
-}
-
-void Item::insertAfter(Item* fresh)
-{
-    this->link->insert(this, fresh, this->next);
-
-}
-
-void Item::insertBefore(Item* fresh)
-{
-    link->insert(prev, fresh, this);
-}
-
-void List::print()
-{
-    cout << "Start of the list " << endl;
-    Item * p = first;
-    while (p != nullptr)
-    {
-        cout << p->name << ", " << p->r << ", " << p->g << ", " << p->b << endl;
-        p = p->next;
+    cout << "Zacatek seznamu" << endl;
+    for (myData* tmp = list; tmp != nullptr; tmp = tmp->next) {
+        cout << "Name: " << tmp->name;
+        cout << " RGB: " << tmp->red << " " << tmp->green << " " << tmp->blue << endl;
     }
-    cout << "End of the list " << endl;
-    cout << endl;
+    cout << "End of the list" << endl << endl;
 }
 
-Item* List::find(string name0)
+myData* main_list = nullptr;
+myData* another_list = nullptr;
+
+
+int x = 10;
+int y = 20;
+
+void uswap(int * a, int * b)
 {
-    Item* p = first;
-    while (p != nullptr && p->name != name0)
-    {
-        p = p->next;
-    }
-    
-    // p == nullptr || p->name == name0 ;
-
-    return p;
+    cout << "a= " << *a << ", b= " << *b << endl;
+    int t = *a;
+    *a = *b;
+    *b = t;
+    cout << "a= " << *a << ", b= " << *b << endl;
 }
 
+void swap(int & a, int & b)
+{
+    cout << "a= " << a << ", b= " << b << endl;
+    int t = a;
+    a = b;
+    b = t;
+    cout << "a= " << a << ", b= " << b << endl;
+}
 
 int main()
 {
-    List a;
+    cout << "x= " << x << ", y= " << y << endl;
+    swap(x, y);
+    cout << "x= " << x << ", y= " << y << endl;
 
-    a.print();
-
-    a.insertFirst (new Item("red", 255, 0, 0));
-    a.insertLast (new Item ("green", 0, 255, 0));
-    
-    a.first -> insertAfter (new Item("blue", 0, 0, 255));
-    a.last -> insertBefore (new Item("yellow", 255, 255, 0));
-
-    Item* t = a.find ("green");
-    if (t == nullptr)
-        cout << "No in list" << endl;
-    else
-    {
-        cout << "Found: " << t->r << " " << t->g << " " << t->b << endl;
-        t->remove ();
-        a.insertFirst (t);
-    }
-    cout << endl;
-
-    a.print();
-
-    List b;
-    while (a.first != nullptr)
-    {
-        Item* t = a.first;
-        t->remove();
-        b.insertFirst(t);
-    }
-
-    a.print();
-    b.print();
-
+    /*
+    push(main_list, new myData("cervena",255,0,0));
+    // push(main_list, new myData("zelena", 0, 255, 0));
+    myPrint(main_list);
+    myPrint(another_list);
+    */
     cout << "O.K." << endl;
 }
+
+#if 0
+myList* createList()
+{
+    myList* list = new myList;
+    list->first = nullptr;
+    return list;
+}
+#endif 
+
+#if 0
+myList* createList()
+{
+    myList *l = new (nothrow) myList;
+    if (!l) {
+        return nullptr;
+    }
+
+    myData* tmp = new (nothrow) myData;
+    if (!tmp) {
+        return nullptr;
+    }
+
+    l->first = tmp;
+    l->first->next = nullptr;
+    return l;
+}
+#endif 
 
